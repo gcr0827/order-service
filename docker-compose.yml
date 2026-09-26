@@ -1,0 +1,53 @@
+# order-service 本地开发环境
+#
+# 用法：
+#   cp .env.example .env      # 第一次：创建环境变量文件（.env 已被 .gitignore 忽略）
+#   docker compose up -d      # 起 MySQL + Redis
+#   docker compose ps         # 看状态（mysql 应显示 healthy）
+#   docker compose down       # 停掉（数据保留，因为用了命名卷）
+#   docker compose down -v    # 停掉并删数据（⚠️ 会清库）
+#
+# ⚠️ 带 ★ 的行是「面试会问 / W4 要改」的知识点，你要能讲清为什么 —— 见 README 的说明
+
+services:
+  mysql:
+    image: mysql:8.0                    # ★1 为什么锁 8.0 而不是 latest？
+    container_name: order-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"                     # ★2 左:宿主机 右:容器 —— 所以 Go 里连 127.0.0.1:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}   # ★3 为什么走 .env 而不是写死？
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4              # ★4 为什么不是 utf8？
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql                   # ★5 为什么数据要落在命名卷上？
+    healthcheck:                                    # ★6 健康检查解决什么问题？
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - devnet
+
+  redis:
+    image: redis:7-alpine               # alpine = 体积小（~17MB vs ~40MB）
+    container_name: order-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - devnet
+
+volumes:                                # 命名卷：由 Docker 管理，跨平台无权限坑
+  mysql-data:
+  redis-data:
+
+networks:
+  devnet:
+    driver: bridge

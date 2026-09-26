@@ -34,5 +34,6 @@ func Wrap(code int, err error) *AppError {
 
 // 哨兵错误：用 errors.Is 判断业务条件
 var (
-	ErrNotFound = errors.New("order not found")
+	ErrNotFound          = errors.New("not found")          // 记录不存在
+	ErrInsufficientStock = errors.New("insufficient stock") // 库存不足
 )
