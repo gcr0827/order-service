@@ -59,9 +59,6 @@ func (p *ProductService) GetSku(ctx context.Context, id uint64) (*model.StorePro
 func (p *ProductService) GetListSkuBySpuID(ctx context.Context, storeID, spuID uint64) ([]*model.StoreProductSku, error) {
 	data, err := p.repo.ListSkuBySpuID(ctx, storeID, spuID)
 	if err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return nil, err
-		}
 		return nil, fmt.Errorf("获取商品SKU失败: %w", err)
 	}
 

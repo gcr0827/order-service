@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -42,13 +41,7 @@ func (p *InventoryHandler) DeductStock(c *gin.Context) {
 
 	err = p.svc.DeductStock(c, uint64(storeID), uint64(skuID), qty)
 	if err != nil {
-		switch {
-		case errors.Is(err, apperr.ErrInsufficientStock):
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "库存无法扣减")
-		default:
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "服务器内部错误")
-
-		}
+		fail(c, err)
 		return
 	}
 	response.OK(c, nil)

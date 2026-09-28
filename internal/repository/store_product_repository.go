@@ -10,16 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type MysqlProductRepository struct {
+type MySQLProductRepository struct {
 	db *gorm.DB
 }
 
-func NewMysqlProductRepository(db *gorm.DB) *MysqlProductRepository {
-	return &MysqlProductRepository{db: db}
+func NewMySQLProductRepository(db *gorm.DB) *MySQLProductRepository {
+	return &MySQLProductRepository{db: db}
 }
 
 // GetSpuByID 根据SPU ID获取SPU信息
-func (r *MysqlProductRepository) GetSpuByID(ctx context.Context, id uint64) (*model.StoreProductSpu, error) {
+func (r *MySQLProductRepository) GetSpuByID(ctx context.Context, id uint64) (*model.StoreProductSpu, error) {
 	var spu model.StoreProductSpu
 	err := r.db.WithContext(ctx).First(&spu, id).Error
 
@@ -34,7 +34,7 @@ func (r *MysqlProductRepository) GetSpuByID(ctx context.Context, id uint64) (*mo
 }
 
 // GetSkuByID 根据SKU ID获取SKU信息
-func (r *MysqlProductRepository) GetSkuByID(ctx context.Context, id uint64) (*model.StoreProductSku, error) {
+func (r *MySQLProductRepository) GetSkuByID(ctx context.Context, id uint64) (*model.StoreProductSku, error) {
 	var sku model.StoreProductSku
 	err := r.db.WithContext(ctx).First(&sku, id).Error
 
@@ -51,7 +51,7 @@ func (r *MysqlProductRepository) GetSkuByID(ctx context.Context, id uint64) (*mo
 }
 
 // ListSkuBySpuID 根据Spu获取sku列表
-func (r *MysqlProductRepository) ListSkuBySpuID(ctx context.Context, storeID, spuID uint64) ([]*model.StoreProductSku, error) {
+func (r *MySQLProductRepository) ListSkuBySpuID(ctx context.Context, storeID, spuID uint64) ([]*model.StoreProductSku, error) {
 	var skuList []*model.StoreProductSku
 	err := r.db.WithContext(ctx).
 		Where("spu_id = ?", spuID).

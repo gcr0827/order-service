@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -31,13 +30,7 @@ func (h *OrderHandler) GetOrder(c *gin.Context) {
 
 	o, err := h.svc.GetOrder(id)
 	if err != nil {
-		// 统一把错误映射成 HTTP 响应，且不向调用方暴露内部错误细节
-		switch {
-		case errors.Is(err, apperr.ErrNotFound):
-			response.Fail(c, http.StatusNotFound, apperr.CodeNotFound, "订单不存在")
-		default:
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "服务内部错误")
-		}
+		fail(c, err)
 		return
 	}
 	response.OK(c, o)

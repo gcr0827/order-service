@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -28,13 +27,7 @@ func (p *ProductHandler) GetSpuByID(c *gin.Context) {
 	}
 	spu, err := p.svc.GetSpu(c, uint64(id))
 	if err != nil {
-		switch {
-		case errors.Is(err, apperr.ErrNotFound):
-			response.Fail(c, http.StatusNotFound, apperr.CodeNotFound, "SPU ID 不存在")
-		default:
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "服务器内部错误")
-
-		}
+		fail(c, err)
 		return
 	}
 	response.OK(c, spu)
@@ -51,13 +44,7 @@ func (p *ProductHandler) GetSkuByID(c *gin.Context) {
 	}
 	sku, err := p.svc.GetSku(c, uint64(id))
 	if err != nil {
-		switch {
-		case errors.Is(err, apperr.ErrNotFound):
-			response.Fail(c, http.StatusNotFound, apperr.CodeNotFound, "SPU ID 不存在")
-		default:
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "服务器内部错误")
-
-		}
+		fail(c, err)
 		return
 	}
 	response.OK(c, sku)
@@ -80,13 +67,7 @@ func (p *ProductHandler) GetListSkuBySpuID(c *gin.Context) {
 
 	sku, err := p.svc.GetListSkuBySpuID(c, uint64(storeID), uint64(spuID))
 	if err != nil {
-		switch {
-		case errors.Is(err, apperr.ErrNotFound):
-			response.Fail(c, http.StatusNotFound, apperr.CodeNotFound, "SPU 不存在")
-		default:
-			response.Fail(c, http.StatusInternalServerError, apperr.CodeInternalError, "服务器内部错误")
-
-		}
+		fail(c, err)
 		return
 	}
 	response.OK(c, sku)
